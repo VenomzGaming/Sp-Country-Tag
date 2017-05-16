@@ -1,6 +1,6 @@
 ## IMPORTS
 
-from plugins.info import PluginInfo
+from plugins.manager import plugin_manager
 
 ## ALL DECLARATION
 
@@ -10,11 +10,4 @@ __all__ = (
 
 ## INFO
 
-info = PluginInfo(
-    'country_tag',
-    verbose_name='Country Tag',
-    author='Existenz - Venomz.fr',
-    description='A plugin to show country of player for sourcepython',
-    version=1.0,
-    url='https://venomz.fr/'
-)
+info = plugin_manager.get_plugin_info(__name__)
