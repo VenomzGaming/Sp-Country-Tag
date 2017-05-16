@@ -1,5 +1,6 @@
 ## IMPORTS
 
+from messages import SayText2
 from translations.strings import LangStrings
 
 
@@ -14,6 +15,6 @@ __all__ = (
 
 strings = LangStrings('country_tag')
 
-CONNECT_ANNOUNCE = strings['Connect Announce']
+CONNECT_ANNOUNCE = SayText2(message=strings['Connect Announce'])
 
-CONNECT_STEAMID_ANNOUNCE = strings['Connect Announce Steamid']
+CONNECT_STEAMID_ANNOUNCE = SayText2(message=strings['Connect Announce Steamid'])
