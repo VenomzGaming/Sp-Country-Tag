@@ -23,10 +23,6 @@ with ConfigManager(info.name) as _config:
     #
     _config.section('Tags')
 
-    _configs['enable_tag'] = _config.cvar(
-        'enable_tag', 1,
-        '1 - Enable tag feature | 0 - Disable tag feature')
-
     _configs['player_tag'] = _config.cvar(
         'player_tag', 1,
         '1 - Remove player tag | 0 - Don\'t remove player tag')

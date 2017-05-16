@@ -30,8 +30,7 @@ def _on_player_activate(event_data):
     if player.userid not in _country_tags:
         _country_tags[player.userid] = get_country(player.address.split(':', 1)[0])
 
-    if _configs['enable_tag'].get_int():
-        update_tag(player)
+    update_tag(player)
 
 
 @Event('player_connect_full')
@@ -41,11 +40,11 @@ def _on_player_connect(event_data):
 
     player = Player(event_data['index'].get_int())
 
-    if _configs['connection_announce_steamid'].get_int() == 1:
-        SayText2(CONNECT_STEAMID_ANNOUNCE.format(name=player.name, steamid=player.steamid, )).send()
+    if _configs['connection_announce_steamid'].get_int():
+        SayText2(CONNECT_STEAMID_ANNOUNCE.format(name=player.name, steamid=player.steamid, country=_country_tags[player.userid].name)).send()
 
-    if _configs['connection_announce'].get_int() == 1:
-        SayText2(ANNOUNCE_MESSAGE.format()).send()
+    if _configs['connection_announce'].get_int():
+        SayText2(ANNOUNCE_MESSAGE.format(name=player.name, country=_country_tags[player.userid].name)).send()
 
 
 @Event('player_spawn')
@@ -54,8 +53,7 @@ def _on_player_spawn(event_data):
     if player.steamid == 'BOT':
         return
 
-    if _configs['enable_tag'].get_int():
-        update_tag(player)
+    update_tag(player)
 
 
 ## UTILS
@@ -73,7 +71,7 @@ def update_tag(player):
     tag = ''
     if _configs['country_tag'].get_int():
         tag = _country_tags[player.userid].iso_code
-    elif _configs['player_tag'].get_int() == 0:
+    elif not _configs['player_tag'].get_int():
         return
 
     player.clan_tag = tag
