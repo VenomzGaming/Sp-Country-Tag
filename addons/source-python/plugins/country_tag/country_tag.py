@@ -20,12 +20,18 @@ from .configs import _configs
 
 _country_tags = dict()
 
-## EVENT BY GAME
+## GAME MANAGEMENT
 
 EVENT_CONNECT_GAME = 'player_connect_client'
 
-if GAME_NAME in ('csgo', 'left4dead2', ):
+if GAME_NAME in ('csgo', 'left4dead', 'left4dead2', ):
     EVENT_CONNECT_GAME = 'player_connect_full'
+
+
+HAS_CLAN_TAG = False
+
+if GAME_NAME in ('csgo', 'cstrike', ):
+    HAS_CLAN_TAG = True
 
 
 ## GAME EVENT
@@ -43,7 +49,8 @@ def _on_player_connect_full(event_data):
     if player.userid not in _country_tags:
         _country_tags[player.userid] = get_country(player.address.split(':', 1)[0])
 
-    update_tag(player)
+    if HAS_CLAN_TAG:
+        update_tag(player)
 
     if _configs['connection_announce_steamid'].get_int():
         for human in PlayerIter('human'):
@@ -78,7 +85,9 @@ def _on_player_spawn(event_data):
     player = Player.from_userid(event_data['userid'])
     if player.steamid == 'BOT' or player.userid not in _country_tags:
         return
-    update_tag(player)
+
+    if HAS_CLAN_TAG:
+        update_tag(player)
 
 
 ## UTILS
