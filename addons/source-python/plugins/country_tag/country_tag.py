@@ -2,14 +2,16 @@
 
 import geoip2.database
 
+from core import GAME_NAME
 from events import Event
 from paths import DATA_PATH
-from players.entity import Player
+from filters.players import PlayerIter
 from messages import SayText2
+from players.entity import Player
 
 
 from .info import info
-from .strings import ANNOUNCE_MESSAGE
+from .strings import CONNECT_ANNOUNCE
 from .strings import CONNECT_STEAMID_ANNOUNCE
 from .configs import _configs
 
@@ -18,13 +20,24 @@ from .configs import _configs
 
 _country_tags = dict()
 
+## EVENT BY GAME
+
+EVENT_CONNECT_GAME = 'player_connect_client'
+
+if GAME_NAME in ('csgo', 'left4dead2', ):
+    EVENT_CONNECT_GAME = 'player_connect_full'
+
 
 ## GAME EVENT
 
-@Event('player_activate')
-def _on_player_activate(event_data):
+@Event(EVENT_CONNECT_GAME)
+def _on_player_connect_full(event_data):
+    if event_data['userid'] == 0:
+        return
+
     player = Player.from_userid(event_data['userid'])
-    if not player.steamid == 'BOT':
+
+    if player.steamid == 'BOT':
         return
 
     if player.userid not in _country_tags:
@@ -32,27 +45,39 @@ def _on_player_activate(event_data):
 
     update_tag(player)
 
-
-@Event('player_connect_full')
-def _on_player_connect(event_data):
-    if event_data['index'] == 0:
-        return
-
-    player = Player(event_data['index'].get_int())
-
     if _configs['connection_announce_steamid'].get_int():
-        SayText2(CONNECT_STEAMID_ANNOUNCE.format(name=player.name, steamid=player.steamid, country=_country_tags[player.userid].name)).send()
+        for human in PlayerIter('human'):
+            SayText2(CONNECT_STEAMID_ANNOUNCE.get_string(
+                    human.language[:2],
+                    name=player.name, 
+                    steamid=player.steamid, 
+                    country=_country_tags[player.userid].name
+                )
+            ).send(human.index)
 
     if _configs['connection_announce'].get_int():
-        SayText2(ANNOUNCE_MESSAGE.format(name=player.name, country=_country_tags[player.userid].name)).send()
+        for human in PlayerIter('human'):
+            SayText2(CONNECT_ANNOUNCE.get_string(
+                    human.language[:2],
+                    name=player.name, 
+                    country=_country_tags[player.userid].name
+                )
+            ).send(human.index)
+
+
+@Event('player_disconnect')
+def _on_player_disconnect(event_data):
+    player = Player.from_userid(event_data['userid'])
+
+    if player.userid in _country_tags:
+        del _country_tags[player.userid]
 
 
 @Event('player_spawn')
 def _on_player_spawn(event_data):
     player = Player.from_userid(event_data['userid'])
-    if player.steamid == 'BOT':
+    if player.steamid == 'BOT' or player.userid not in _country_tags:
         return
-
     update_tag(player)
 
 
