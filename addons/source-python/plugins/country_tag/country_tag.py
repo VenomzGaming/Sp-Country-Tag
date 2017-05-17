@@ -62,7 +62,7 @@ def _on_player_connect_full(event_data):
         )
 
     if _configs['connection_announce'].get_int():
-        CONNECT_STEAMID_ANNOUNCE.send(
+        CONNECT_ANNOUNCE.send(
             _human_players,
             name=player.name,
             country=_country_tags[player.userid].name,
