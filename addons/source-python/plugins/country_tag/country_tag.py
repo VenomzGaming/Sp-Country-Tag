@@ -85,12 +85,12 @@ def get_country(ip):
 
 
 def update_clan_tag(player):
-    if player.userid not in _country_tags:
-        return
-
     tag = ''
     if _configs['country_tag'].get_int():
-        tag = _country_tags[player.userid].iso_code
+        try:
+            tag = _country_tags[player.userid].iso_code
+        except KeyError:
+            tag = ''
     elif not _configs['player_tag'].get_int():
         return
 
