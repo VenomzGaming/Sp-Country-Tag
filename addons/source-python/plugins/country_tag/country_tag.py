@@ -19,6 +19,7 @@ from .configs import _configs
 ## GLOBALS
 
 _country_tags = dict()
+_human_players = PlayerIter('human')
 
 ## GAME MANAGEMENT
 
@@ -53,23 +54,19 @@ def _on_player_connect_full(event_data):
         update_tag(player)
 
     if _configs['connection_announce_steamid'].get_int():
-        for human in PlayerIter('human'):
-            SayText2(CONNECT_STEAMID_ANNOUNCE.get_string(
-                    human.language[:2],
-                    name=player.name, 
-                    steamid=player.steamid, 
-                    country=_country_tags[player.userid].name
-                )
-            ).send(human.index)
+        CONNECT_STEAMID_ANNOUNCE.send(
+            _human_players,
+            name=player.name,
+            steamid=player.steamid,
+            country=_country_tags[player.userid].name,
+        )
 
     if _configs['connection_announce'].get_int():
-        for human in PlayerIter('human'):
-            SayText2(CONNECT_ANNOUNCE.get_string(
-                    human.language[:2],
-                    name=player.name, 
-                    country=_country_tags[player.userid].name
-                )
-            ).send(human.index)
+        CONNECT_STEAMID_ANNOUNCE.send(
+            _human_players,
+            name=player.name,
+            country=_country_tags[player.userid].name,
+        )
 
 
 @Event('player_disconnect')
