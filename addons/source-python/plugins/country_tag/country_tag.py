@@ -53,8 +53,7 @@ def _on_player_activate(event_data):
                 steamid=player.steamid,
                 country=tag.name,
             )
-
-        if _configs['connection_announce'].get_int():
+        elif _configs['connection_announce'].get_int():
             CONNECT_ANNOUNCE.send(
                 _human_players,
                 name=player.name,
